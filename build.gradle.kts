@@ -1,9 +1,10 @@
-import org.openjfx.gradle.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.lang.reflect.*
 import io.github.fvarrui.javapackager.model.Platform
-import io.github.fvarrui.javapackager.model.WindowsConfig
-import de.undercouch.gradle.tasks.download.Download
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openjfx.gradle.JavaFXOptions
+import org.openjfx.gradle.JavaFXPlatform
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+
 
 buildscript {
     val kotlin_version: String by extra{"1.5.21"}
@@ -18,15 +19,16 @@ buildscript {
     }
 }
 plugins {
-    id("org.springframework.boot") version "2.1.6.RELEASE"
+    id("org.springframework.boot") version "2.1.6.RELEASE" apply false
     id("java")
     id("application")
-    id("org.openjfx.javafxplugin") version "0.0.9"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.3.61"
+    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.jetbrains.kotlin.plugin.spring") version "2.0.0"
+    id("maven-publish")
 }
 
 configure<JavaFXOptions> {
-    version = "11.0.2"
+    version = "22.0.1"
     modules = listOf("javafx.web")
 
     // Set JAVAFX_PLATFORM to "linux", "win", or "mac"
@@ -64,6 +66,9 @@ java {
 }
 
 repositories {
+    maven ("https://maven.aliyun.com/repository/public")
+    maven ("https://maven.aliyun.com/repository/spring")
+    maven ("https://maven.aliyun.com/repository/spring-plugin")
     mavenCentral()
     maven("https://jitpack.io")
     maven("https://gitlab.com/api/v4/projects/26729549/packages/maven")
@@ -78,8 +83,8 @@ val compileOnly by configurations.getting {
 dependencies {
     val kotlin_version: String by extra{"1.5.21"}
     // val kotlin_version: String by extra
-    implementation("org.springframework.boot:spring-boot-starter")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter:2.5.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     // vertx
     implementation("io.vertx:vertx-core:3.8.1")
@@ -143,7 +148,7 @@ tasks.withType<KotlinCompile> {
 
 application {
     // Define the main class for the application
-    mainClassName = "com.htmake.reader.ReaderUIApplicationKt"
+    mainClass.set("com.htmake.reader.ReaderUIApplicationKt")
 }
 
 tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("buildReader"){
@@ -205,27 +210,3 @@ tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("packageReaderLi
     }
 }
 
-tasks {
-    val downloadWinJre by registering(Download::class) {
-        src("https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.8_10.zip")
-        dest(File(buildDir, "win64-jre.zip"))
-        onlyIfModified(true)
-    }
-}
-
-tasks.register<Copy>("unpackWinJre") {
-    dependsOn("downloadWinJre")
-    from(zipTree("$buildDir/win64-jre.zip")) {
-        include("jdk*/**")
-        eachFile {
-            relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
-        }
-        includeEmptyDirs = false
-    }
-    into(File(buildDir, "win64-jre"))
-}
-
-// javafx {
-//     version = "11.0.2"
-//     modules = [ 'javafx.web' ]
-// }
