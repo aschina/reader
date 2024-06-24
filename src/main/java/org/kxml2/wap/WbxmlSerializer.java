@@ -493,16 +493,16 @@ public class WbxmlSerializer implements XmlSerializer {
             offset++; 
         }
         
-        stringTable.put(s, new Integer(i));
+        stringTable.put(s, Integer.valueOf(i));
         if(s.charAt(0) == ' '){
-            stringTable.put(s.substring(1), new Integer(i+1));
+            stringTable.put(s.substring(1), Integer.valueOf(i + 1));
         }
         int j = s.lastIndexOf(' ');
         if(j > 1){
         	String t = s.substring(j);
         	int k = t.getBytes("utf-8").length;
-        	stringTable.put(t, new Integer(i+k));
-        	stringTable.put(s.substring(j+1), new Integer(i+k+1));
+        	stringTable.put(t, Integer.valueOf(i + k));
+        	stringTable.put(s.substring(j+1), Integer.valueOf(i + k + 1));
         }
                 
         writeStrI(stringTableBuf, s);

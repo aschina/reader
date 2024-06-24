@@ -1,11 +1,12 @@
 package com.htmake.reader.verticle
 
+import com.htmake.reader.utils.error
+import com.htmake.reader.utils.success
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.LoggerFormat
 import io.vertx.ext.web.handler.LoggerHandler
 import io.vertx.ext.web.handler.SessionHandler
@@ -14,8 +15,6 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import com.htmake.reader.utils.error
-import com.htmake.reader.utils.success
 import java.net.URLDecoder
 
 

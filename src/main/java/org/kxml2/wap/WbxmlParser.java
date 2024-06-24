@@ -745,7 +745,7 @@ public class WbxmlParser implements XmlPullParser {
             case Wbxml.EXT_T_0 :
             case Wbxml.EXT_T_1 :
             case Wbxml.EXT_T_2 :
-                return new Integer(readInt());
+                return Integer.valueOf(readInt());
                 
             case Wbxml.EXT_0 :
             case Wbxml.EXT_1 :
@@ -1007,7 +1007,7 @@ public class WbxmlParser implements XmlPullParser {
             //Lazy init if device is not using StringTable but inline 0x03 strings
             cacheStringTable = new Hashtable();
         }
-        String forReturn = (String) cacheStringTable.get(new Integer(pos));
+        String forReturn = (String) cacheStringTable.get(Integer.valueOf(pos));
         if (forReturn == null){
 
             int end = pos;
@@ -1015,7 +1015,7 @@ public class WbxmlParser implements XmlPullParser {
             	end++;
 			}
             forReturn = new String(stringTable, pos, end-pos, encoding);
-            cacheStringTable.put(new Integer(pos), forReturn);
+            cacheStringTable.put(Integer.valueOf(pos), forReturn);
         }
         return forReturn;
     }

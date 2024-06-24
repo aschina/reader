@@ -7,10 +7,10 @@ import java.lang.reflect.Method
 
 
 buildscript {
-    val kotlin_version: String by extra{"1.5.21"}
+    val kotlin_version: String by extra { "1.5.21" }
     // extra["kotlin_version"] = "1.5.21"
     repositories {
-	    mavenLocal()
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -19,12 +19,11 @@ buildscript {
     }
 }
 plugins {
-    id("org.springframework.boot") version "2.1.6.RELEASE" apply false
+    id("org.springframework.boot") version "2.7.18"
     id("java")
     id("application")
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("org.jetbrains.kotlin.plugin.spring") version "2.0.0"
-    id("maven-publish")
 }
 
 configure<JavaFXOptions> {
@@ -37,7 +36,8 @@ configure<JavaFXOptions> {
         val javafxPlatform: JavaFXPlatform = JavaFXPlatform.values()
             .firstOrNull { it.classifier == javafxPlatformOverride }
             ?: throw IllegalArgumentException("JAVAFX_PLATFORM $javafxPlatformOverride not in list:" +
-                    " ${JavaFXPlatform.values().map { it.classifier }}")
+                    " ${JavaFXPlatform.values().map { it.classifier }}"
+            )
 
         logger.info("Overriding JavaFX platform to {}", javafxPlatform)
 
@@ -66,9 +66,9 @@ java {
 }
 
 repositories {
-    maven ("https://maven.aliyun.com/repository/public")
-    maven ("https://maven.aliyun.com/repository/spring")
-    maven ("https://maven.aliyun.com/repository/spring-plugin")
+    maven("https://maven.aliyun.com/repository/public")
+    maven("https://maven.aliyun.com/repository/spring")
+    maven("https://maven.aliyun.com/repository/spring-plugin")
     mavenCentral()
     maven("https://jitpack.io")
     maven("https://gitlab.com/api/v4/projects/26729549/packages/maven")
@@ -81,30 +81,31 @@ val compileOnly by configurations.getting {
 }
 
 dependencies {
-    val kotlin_version: String by extra{"1.5.21"}
+    val kotlinVersion: String by extra { "1.5.21" }
     // val kotlin_version: String by extra
-    implementation("org.springframework.boot:spring-boot-starter:2.5.4")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+    implementation("org.springframework.boot:spring-boot-starter:2.7.18")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.18")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     // vertx
-    implementation("io.vertx:vertx-core:3.8.1")
-    implementation("io.vertx:vertx-lang-kotlin:3.8.1")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:3.8.1")
-    implementation("io.vertx:vertx-web:3.8.1")
-    implementation("io.vertx:vertx-web-client:3.8.1")
+    val vertxVersion="3.9.16"
+    implementation("io.vertx:vertx-core:$vertxVersion")
+    implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+    implementation("io.vertx:vertx-web:$vertxVersion")
+    implementation("io.vertx:vertx-web-client:$vertxVersion")
 
     // json
-    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.+")
 
     // log
     implementation("io.github.microutils:kotlin-logging:1.6.24")
     implementation("uk.org.lidalia:sysout-over-slf4j:1.0.2")
 
-    implementation("com.google.guava:guava:28.0-jre")
+    implementation("com.google.guava:guava:33.2.1-jre")
 
     // 网络
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.1.0")
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.6.1")
@@ -115,9 +116,9 @@ dependencies {
     implementation(fileTree("src/lib").include("rhino-*.jar"))
 
     // 规则相关
-    implementation("org.jsoup:jsoup:1.14.1")
+    implementation("org.jsoup:jsoup:1.15.3")
     implementation("cn.wanghaomiao:JsoupXpath:2.5.0")
-    implementation("com.jayway.jsonpath:json-path:2.6.0")
+    implementation("com.jayway.jsonpath:json-path:2.9.0")
 
     // xml
     // 弃用 xmlpull-1.1.4.0，因为它需要 Java9
@@ -126,7 +127,9 @@ dependencies {
     // implementation("com.github.stefanhaustein:kxml2:2.5.0")
 
     //加解密类库
-    implementation("cn.hutool:hutool-crypto:5.8.0.M1")
+    implementation("cn.hutool:hutool-crypto:5.8.28")
+
+    testImplementation("junit:junit:4.13.2")
 
     // 转换繁体
     // implementation("com.github.liuyueyi.quick-chinese-transfer:quick-transfer-core:0.2.1")
@@ -151,38 +154,50 @@ application {
     mainClass.set("com.htmake.reader.ReaderUIApplicationKt")
 }
 
-tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("buildReader"){
+tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("buildReader") {
     dependsOn("build")
-	// mandatory
-	mainClass = "com.htmake.reader.ReaderUIApplicationKt"
-	// optional
+    // mandatory
+    mainClass = "com.htmake.reader.ReaderUIApplicationKt"
+    // optional
     setBundleJre(false)
-    vmArgs = arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.packaged=true", "-Dreader.app.debug=true")
+    vmArgs = arrayListOf<String>(
+        "-Dreader.app.showUI=true",
+        "-Dspring.profiles.active=prod",
+        "-Dreader.app.packaged=true",
+        "-Dreader.app.debug=true"
+    )
 }
 
 tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("packageReaderMac") {
     dependsOn("build")
-	// mandatory
-	mainClass = "com.htmake.reader.ReaderUIApplicationKt"
-	// optional
+    // mandatory
+    mainClass = "com.htmake.reader.ReaderUIApplicationKt"
+    // optional
     setBundleJre(false)
-	// bundleJre = false
+    // bundleJre = false
     // setCreateZipball(true)
     platform = Platform.mac
-    vmArgs = arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.packaged=true", "-Dreader.app.debug=false", "-Dlogging.path=\$HOME/.reader/logs")
+    vmArgs = arrayListOf<String>(
+        "-Dreader.app.showUI=true",
+        "-Dspring.profiles.active=prod",
+        "-Dreader.app.packaged=true",
+        "-Dreader.app.debug=false",
+        "-Dlogging.path=\$HOME/.reader/logs"
+    )
 }
 
 tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("packageReaderWin") {
     dependsOn("build")
-	// mandatory
-	mainClass = "com.htmake.reader.ReaderUIApplicationKt"
-	// optional
+    // mandatory
+    mainClass = "com.htmake.reader.ReaderUIApplicationKt"
+    // optional
     setBundleJre(false)
-	// bundleJre = true
+    // bundleJre = true
     // jrePath = File(buildDir, "win64-jre")
     setCreateZipball(true)
     platform = Platform.windows
-    vmArgs = arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.debug=false")
+    vmArgs =
+        arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.debug=false")
     withGroovyBuilder {
         "winConfig" {
             "setWrapJar"(false)
@@ -195,14 +210,15 @@ tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("packageReaderWi
 
 tasks.create<io.github.fvarrui.javapackager.gradle.PackageTask>("packageReaderLinux") {
     dependsOn("build")
-	// mandatory
-	mainClass = "com.htmake.reader.ReaderUIApplicationKt"
-	// optional
+    // mandatory
+    mainClass = "com.htmake.reader.ReaderUIApplicationKt"
+    // optional
     setBundleJre(false)
-	// bundleJre = false
+    // bundleJre = false
     setCreateZipball(true)
     platform = Platform.linux
-    vmArgs = arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.debug=false")
+    vmArgs =
+        arrayListOf<String>("-Dreader.app.showUI=true", "-Dspring.profiles.active=prod", "-Dreader.app.debug=false")
     withGroovyBuilder {
         "linuxConfig" {
             "setWrapJar"(false)
